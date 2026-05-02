@@ -754,8 +754,8 @@ body:not(.standalone) .installHint{
 
   #gridToggle{ grid-column:2; grid-row:1; }
   #stageToggle{ grid-column:2; grid-row:2; }
-  #planToggle{ grid-column:2; grid-row:3; }
-  #clear{ grid-column:1 / -1; grid-row:4; }
+  #clear{ grid-column:2; grid-row:3; }
+  #planToggle{ grid-column:1 / -1; grid-row:4; }
 
   body.stage-names-hidden .mobileStageLabel{
     opacity:0;
@@ -1081,10 +1081,10 @@ body.plan-mode .planModeHint{
       <button data-day="Day 1" class="active">Day 1</button>
       <button data-day="Day 2">Day 2</button>
       <button data-day="Day 3">Day 3</button>
-      <button id="gridToggle" aria-pressed="false">Grid Overlay: Off</button>
-      <button id="stageToggle" aria-pressed="false">Hide Stage Names</button>
       <button id="planToggle">My Plan ✨</button>
-      <button id="clear">Clear Highlights</button>
+      <button id="clear">Clear Sets</button>
+      <button id="gridToggle" aria-pressed="false">Grid: ❌</button>
+      <button id="stageToggle" aria-pressed="false">Hide Stage Names</button>
     </div>
     <div class="searchWrap">
       <input id="search" placeholder="Search DJ..." autocomplete="off">
@@ -1585,7 +1585,7 @@ function showToast(message){
 const gridToggle = document.getElementById("gridToggle");
 gridToggle.onclick = ()=>{
   const isOn = document.body.classList.toggle("grid-overlay");
-  gridToggle.textContent = isOn ? "Grid Overlay: On" : "Grid Overlay: Off";
+  gridToggle.textContent = isOn ? "Grid: ✅" : "Grid: ❌";
   gridToggle.setAttribute("aria-pressed", String(isOn));
 };
 
