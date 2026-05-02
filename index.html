@@ -1146,6 +1146,87 @@ body:after{
   }
 }
 
+
+/* Clear Sets confirmation popup */
+.confirmOverlay{
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(4, 3, 14, .62);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+
+.confirmOverlay.show{
+  display:flex;
+}
+
+.confirmBox{
+  width:min(420px, 100%);
+  border-radius:28px;
+  padding:22px;
+  text-align:center;
+  color:#fff;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255,94,219,.30), transparent 38%),
+    radial-gradient(circle at 90% 100%, rgba(102,230,255,.24), transparent 44%),
+    linear-gradient(180deg, rgba(34,31,58,.96), rgba(16,14,34,.98));
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:
+    0 24px 70px rgba(0,0,0,.55),
+    0 0 28px rgba(255,94,219,.20),
+    0 0 38px rgba(102,230,255,.16),
+    inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+.confirmBox h2{
+  margin:0 0 8px;
+  font-size:24px;
+  line-height:1.05;
+}
+
+.confirmBox p{
+  margin:0 auto 18px;
+  max-width:31ch;
+  color:rgba(255,255,255,.82);
+  font-size:14px;
+  line-height:1.45;
+}
+
+.confirmActions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.confirmActions button{
+  width:100%;
+}
+
+#confirmClearYes{
+  background:linear-gradient(135deg,#ff6b6b,#ffd25c) !important;
+  color:#111 !important;
+}
+
+#confirmClearNo{
+  background:linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.06)) !important;
+}
+
+@media (max-width:700px){
+  .confirmOverlay{
+    align-items:flex-end;
+    padding:16px 16px calc(16px + env(safe-area-inset-bottom));
+  }
+
+  .confirmBox{
+    border-radius:24px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1181,6 +1262,17 @@ body:after{
   <div class="note">Tap once for Interested, twice for Must-see ★, third tap to remove. Your plan auto-saves in this browser.</div>
   <div class="installHint">To hide Safari bars: Share → Add to Home Screen, then open it from the Home Screen.</div>
   <div class="planModeHint">My Plan view is on: showing only your Interested and Must-see sets ✨</div>
+
+  <div id="confirmClear" class="confirmOverlay" role="dialog" aria-modal="true" aria-labelledby="confirmClearTitle" aria-hidden="true">
+    <div class="confirmBox">
+      <h2 id="confirmClearTitle">Clear selected sets?</h2>
+      <p id="confirmClearText">This will remove your selected sets for the current day.</p>
+      <div class="confirmActions">
+        <button id="confirmClearNo" type="button">Cancel</button>
+        <button id="confirmClearYes" type="button">Yes, clear</button>
+      </div>
+    </div>
+  </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </div>
 
@@ -1701,20 +1793,57 @@ if(planToggle){
   planToggle.onclick = togglePlanMode;
 }
 
-document.getElementById("clear").onclick=()=>{
-  const hasCurrentDaySelections = [...selected].some(id => id.startsWith(currentDay + "|"));
+const confirmClear = document.getElementById("confirmClear");
+const confirmClearText = document.getElementById("confirmClearText");
+const confirmClearNo = document.getElementById("confirmClearNo");
+const confirmClearYes = document.getElementById("confirmClearYes");
 
-  if(!hasCurrentDaySelections){
+function hasSelectionsForCurrentDay(){
+  return [...selected.keys()].some(id => id.startsWith(currentDay + "|"));
+}
+
+function openClearConfirm(){
+  if(!confirmClear) return;
+  if(confirmClearText){
+    confirmClearText.textContent = `This will remove all selected sets for ${currentDay}.`;
+  }
+  confirmClear.classList.add("show");
+  confirmClear.setAttribute("aria-hidden", "false");
+  setTimeout(()=>confirmClearYes?.focus(), 0);
+}
+
+function closeClearConfirm(){
+  if(!confirmClear) return;
+  confirmClear.classList.remove("show");
+  confirmClear.setAttribute("aria-hidden", "true");
+}
+
+document.getElementById("clear").onclick=()=>{
+  if(!hasSelectionsForCurrentDay()){
     showToast("No selected sets to clear ✨");
     return;
   }
 
-  const ok = window.confirm(`Clear all selected sets for ${currentDay}?`);
-  if(!ok) return;
+  openClearConfirm();
+};
 
+confirmClearNo?.addEventListener("click", closeClearConfirm);
+
+confirmClearYes?.addEventListener("click", ()=>{
+  closeClearConfirm();
   clearCurrentDaySelections();
   showToast("Selected sets cleared ✨");
-};
+});
+
+confirmClear?.addEventListener("click", (e)=>{
+  if(e.target === confirmClear) closeClearConfirm();
+});
+
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "Escape" && confirmClear?.classList.contains("show")){
+    closeClearConfirm();
+  }
+});
 
 let resizeTimer;
 window.addEventListener("resize", ()=>{
