@@ -2,6 +2,12 @@
 
 > *“Under the electric sky, every choice matters.”*
 
+### 🚀 **Live App**
+
+👉 https://eatingnuts2.github.io/EDC-Vegas-2026-Setlist/
+
+---
+
 A sleek, mobile-first schedule planner designed to help you navigate **EDC Las Vegas 2026** without missing the sets that matter most.
 
 Built as a lightweight web app that works **offline**, so even when signal disappears in the crowd… your plan doesn’t.
