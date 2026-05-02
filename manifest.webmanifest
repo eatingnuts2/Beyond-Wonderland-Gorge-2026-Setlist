@@ -1,0 +1,10 @@
+{
+  "name": "EDC Las Vegas Schedule",
+  "short_name": "EDC Schedule",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#070414",
+  "theme_color": "#070414",
+  "description": "Offline EDC Las Vegas schedule planner"
+}
