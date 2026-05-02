@@ -971,135 +971,6 @@ button:active{
 }
 
 
-/* My Plan bottom sheet / modal */
-.planOverlay{
-  position:fixed;
-  inset:0;
-  z-index:9998;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-  background:rgba(3,4,12,.64);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-}
-
-.planOverlay.show{
-  display:flex;
-}
-
-.planPanel{
-  width:min(760px, 100%);
-  max-height:min(82vh, 760px);
-  overflow:hidden;
-  border-radius:28px;
-  color:#fff;
-  background:
-    radial-gradient(circle at 16% 0%, rgba(255,94,219,.28), transparent 32%),
-    radial-gradient(circle at 86% 12%, rgba(102,230,255,.24), transparent 34%),
-    linear-gradient(180deg, rgba(28,29,45,.97), rgba(12,13,25,.98));
-  border:1px solid rgba(255,255,255,.18);
-  box-shadow:0 24px 70px rgba(0,0,0,.58), inset 0 1px 0 rgba(255,255,255,.10);
-}
-
-.planHeader{
-  display:flex;
-  justify-content:space-between;
-  gap:16px;
-  align-items:flex-start;
-  padding:20px 20px 14px;
-  border-bottom:1px solid rgba(255,255,255,.12);
-}
-
-.planHeader h2{
-  margin:0;
-  font-size:28px;
-  line-height:1;
-  text-shadow:0 0 18px rgba(255,94,219,.42), 0 0 26px rgba(102,230,255,.28);
-}
-
-.planHeader p{
-  margin:8px 0 0;
-  color:rgba(255,255,255,.72);
-  font-size:13px;
-  font-weight:700;
-}
-
-.planClose{
-  width:44px;
-  height:44px;
-  padding:0 !important;
-  font-size:28px;
-  line-height:1;
-}
-
-.planContent{
-  max-height:calc(min(82vh, 760px) - 86px);
-  overflow:auto;
-  padding:16px 20px 22px;
-}
-
-.planDay{
-  margin-bottom:18px;
-}
-
-.planDayTitle{
-  margin:4px 0 10px;
-  font-size:18px;
-  font-weight:900;
-  color:#fff8dc;
-  text-shadow:0 0 12px rgba(255,210,92,.32);
-}
-
-.planItem{
-  position:relative;
-  padding:12px 12px 12px 14px;
-  margin-bottom:9px;
-  border-radius:18px;
-  background:rgba(255,255,255,.09);
-  border:1px solid rgba(255,255,255,.13);
-  box-shadow:0 8px 22px rgba(0,0,0,.24);
-}
-
-.planItem.mustsee{
-  background:linear-gradient(135deg, rgba(255,211,92,.25), rgba(255,141,219,.12));
-  border-color:rgba(255,232,150,.42);
-}
-
-.planItem.conflict{
-  border-color:rgba(255,159,28,.62);
-  box-shadow:0 0 0 1px rgba(255,90,64,.20), 0 8px 22px rgba(0,0,0,.25);
-}
-
-.planArtist{
-  font-size:15px;
-  font-weight:900;
-  line-height:1.18;
-}
-
-.planMeta{
-  margin-top:5px;
-  color:rgba(255,255,255,.76);
-  font-size:12px;
-  font-weight:750;
-}
-
-.planClash{
-  margin-top:7px;
-  color:#ffd89b;
-  font-size:12px;
-  font-weight:850;
-  line-height:1.35;
-}
-
-.planEmpty{
-  padding:24px 12px 30px;
-  text-align:center;
-  color:rgba(255,255,255,.76);
-  font-weight:800;
-}
-
 .set.mustsee{
   outline:4px solid rgba(255,232,120,.98) !important;
   box-shadow:
@@ -1138,30 +1009,6 @@ button:active{
 }
 
 @media (max-width:700px){
-  .planOverlay{
-    align-items:flex-end;
-    padding:0;
-  }
-
-  .planPanel{
-    width:100%;
-    max-height:86dvh;
-    border-radius:26px 26px 0 0;
-  }
-
-  .planHeader{
-    padding:18px 16px 12px;
-  }
-
-  .planHeader h2{
-    font-size:25px;
-  }
-
-  .planContent{
-    max-height:calc(86dvh - 82px);
-    padding:14px 16px max(20px, env(safe-area-inset-bottom));
-  }
-
   .set.mustsee{
     outline:2px solid rgba(255,232,120,.98) !important;
     box-shadow:
@@ -1178,6 +1025,46 @@ button:active{
     height:14px;
     font-size:9px;
   }
+}
+
+
+/* My Plan table filter mode: keeps the timeline layout, hides unselected sets */
+body.plan-mode .set:not(.selected){
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+
+body.plan-mode .set.selected{
+  z-index:85 !important;
+}
+
+#planToggle.active{
+  background:linear-gradient(135deg,#ffd25c,#ff8ddb,#8fefff) !important;
+  color:#111 !important;
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.30),
+    0 0 22px rgba(255,210,92,.45),
+    0 0 28px rgba(255,94,219,.30) !important;
+}
+
+.planModeHint{
+  display:none;
+  max-width:1120px;
+  margin:10px auto 0;
+  padding:10px 14px;
+  border-radius:16px;
+  text-align:center;
+  font-size:13px;
+  font-weight:800;
+  color:#111;
+  background:linear-gradient(135deg, rgba(255,210,92,.96), rgba(143,239,255,.92), rgba(255,141,219,.92));
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:0 10px 28px rgba(0,0,0,.22), 0 0 18px rgba(255,210,92,.22);
+}
+
+body.plan-mode .planModeHint{
+  display:block;
 }
 
 </style>
@@ -1214,18 +1101,7 @@ button:active{
   </div>
   <div class="note">Tap once for Interested, twice for Must-see ★, third tap to remove. Your plan auto-saves in this browser.</div>
   <div class="installHint">To hide Safari bars: Share → Add to Home Screen, then open it from the Home Screen.</div>
-  <div id="planOverlay" class="planOverlay" aria-hidden="true">
-    <div class="planPanel" role="dialog" aria-modal="true" aria-labelledby="planTitle">
-      <div class="planHeader">
-        <div>
-          <h2 id="planTitle">My Plan ✨</h2>
-          <p>Interested sets and must-see picks, sorted by time.</p>
-        </div>
-        <button id="planClose" class="planClose" aria-label="Close My Plan">×</button>
-      </div>
-      <div id="planContent" class="planContent"></div>
-    </div>
-  </div>
+  <div class="planModeHint">My Plan view is on: showing only your Interested and Must-see sets ✨</div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </div>
 
@@ -1535,9 +1411,6 @@ function toggleSetHighlight(set){
 
   saveSelected();
   updateConflictHighlights();
-  if(document.getElementById("planOverlay")?.classList.contains("show")){
-    renderPlan();
-  }
 }
 
 function trackPress(el, className){
@@ -1727,149 +1600,27 @@ if(stageToggle){
   };
 }
 
-function selectedPlanItems(){
-  const items = [];
-  Object.keys(DATA).forEach(day=>{
-    STAGES.forEach(stage=>{
-      (DATA[day][stage] || []).forEach(([artist,start,end])=>{
-        const id = setId(day, stage, artist, start);
-        const priority = selected.get(id);
-        if(!priority) return;
-        items.push({
-          id,
-          day,
-          stage,
-          artist,
-          start,
-          end,
-          startHour:toHour(start),
-          endHour:toHour(end),
-          priority
-        });
-      });
-    });
-  });
-  return items.sort((a,b)=>{
-    const dayCompare = a.day.localeCompare(b.day);
-    if(dayCompare) return dayCompare;
-    return a.startHour - b.startHour || a.stage.localeCompare(b.stage) || a.artist.localeCompare(b.artist);
-  });
+let isPlanMode = false;
+
+function updatePlanModeButton(){
+  const planToggle = document.getElementById("planToggle");
+  if(!planToggle) return;
+  planToggle.classList.toggle("active", isPlanMode);
+  planToggle.textContent = isPlanMode ? "Exit My Plan" : "My Plan ✨";
+  planToggle.setAttribute("aria-pressed", String(isPlanMode));
 }
 
-function clashMapForPlan(items){
-  const map = new Map(items.map(item=>[item.id, []]));
-
-  for(let i=0; i<items.length; i++){
-    for(let j=i+1; j<items.length; j++){
-      const a = items[i];
-      const b = items[j];
-      if(a.day !== b.day) continue;
-      if(!rangesOverlap(a, b)) continue;
-      if(a.priority !== 2 && b.priority !== 2) continue;
-
-      map.get(a.id).push(b);
-      map.get(b.id).push(a);
-    }
-  }
-
-  return map;
-}
-
-function renderPlan(){
-  const content = document.getElementById("planContent");
-  if(!content) return;
-
-  const items = selectedPlanItems();
-  const clashes = clashMapForPlan(items);
-  content.innerHTML = "";
-
-  if(!items.length){
-    content.innerHTML = '<div class="planEmpty">No sets selected yet.<br>Tap a set once for Interested, twice for Must-see ★</div>';
-    return;
-  }
-
-  const frag = document.createDocumentFragment();
-  ["Day 1", "Day 2", "Day 3"].forEach(day=>{
-    const dayItems = items.filter(item=>item.day === day);
-    if(!dayItems.length) return;
-
-    const section = document.createElement("section");
-    section.className = "planDay";
-
-    const title = document.createElement("div");
-    title.className = "planDayTitle";
-    title.textContent = day;
-    section.appendChild(title);
-
-    dayItems.forEach(item=>{
-      const itemClashes = clashes.get(item.id) || [];
-      const card = document.createElement("div");
-      card.className = "planItem" + (item.priority === 2 ? " mustsee" : " interested") + (itemClashes.length ? " conflict" : "");
-
-      const icon = item.priority === 2 ? "★" : "☆";
-      const clashText = itemClashes.length
-        ? `<div class="planClash">⚠ Clashes with ${itemClashes.map(other=>`${other.priority === 2 ? "★ " : ""}${other.artist} (${fmtRange(other.start, other.end)} • ${other.stage})`).join("; ")}</div>`
-        : "";
-
-      card.innerHTML = `
-        <div class="planArtist">${icon} ${item.artist}</div>
-        <div class="planMeta">${fmtRange(item.start, item.end)} • ${item.stage}</div>
-        ${clashText}
-      `;
-
-      card.addEventListener("click", ()=>{
-        closePlan();
-        render(item.day);
-        setTimeout(()=>{
-          const el = [...document.querySelectorAll(".set")].find(x=>x.dataset.id === item.id);
-          if(!el) return;
-          const scroller = document.querySelector(".scheduleScroll");
-          if(isMobileLayout() && scroller){
-            scroller.scrollLeft = Math.max(0, el.offsetLeft - getMobileLabelWidth() - 20);
-          } else {
-            el.scrollIntoView({block:"center", inline:"center"});
-          }
-        }, 50);
-      });
-
-      section.appendChild(card);
-    });
-
-    frag.appendChild(section);
-  });
-
-  content.appendChild(frag);
-}
-
-function openPlan(){
-  renderPlan();
-  const overlay = document.getElementById("planOverlay");
-  overlay.classList.add("show");
-  overlay.setAttribute("aria-hidden", "false");
-}
-
-function closePlan(){
-  const overlay = document.getElementById("planOverlay");
-  overlay.classList.remove("show");
-  overlay.setAttribute("aria-hidden", "true");
+function togglePlanMode(){
+  isPlanMode = !isPlanMode;
+  document.body.classList.toggle("plan-mode", isPlanMode);
+  updatePlanModeButton();
 }
 
 const planToggle = document.getElementById("planToggle");
-if(planToggle) planToggle.onclick = openPlan;
-
-const planClose = document.getElementById("planClose");
-if(planClose) planClose.onclick = closePlan;
-
-const planOverlay = document.getElementById("planOverlay");
-if(planOverlay){
-  planOverlay.addEventListener("click", (e)=>{
-    if(e.target === planOverlay) closePlan();
-  });
+if(planToggle){
+  planToggle.setAttribute("aria-pressed", "false");
+  planToggle.onclick = togglePlanMode;
 }
-
-document.addEventListener("keydown", (e)=>{
-  if(e.key === "Escape") closePlan();
-});
 
 document.getElementById("clear").onclick=()=>{
   clearCurrentDaySelections();
