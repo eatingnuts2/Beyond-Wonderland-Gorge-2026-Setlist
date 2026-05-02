@@ -496,8 +496,7 @@ button.active{
     transform:none !important;
     will-change:auto !important;
     z-index:999 !important;
-    pointer-events:none !important;
-    box-shadow:
+      box-shadow:
       6px 0 14px rgba(0,0,0,.30),
       0 4px 16px rgba(0,0,0,.38),
       0 0 12px rgba(255,255,255,.10);
@@ -613,6 +612,7 @@ button.active{
     bottom:calc(18px + env(safe-area-inset-bottom));
   }
 }
+
 
 
 /* Optional time-grid overlay */
@@ -1028,14 +1028,21 @@ button:active{
 }
 
 
-/* My Plan table filter mode: keeps the timeline layout, hides unselected sets */
+/* My Plan table filter mode: keeps the timeline layout and ghosts unselected sets */
 body.plan-mode .set:not(.selected){
-  opacity:0 !important;
-  visibility:hidden !important;
-  pointer-events:none !important;
+  opacity:.18 !important;
+  filter:grayscale(.75) brightness(.72) saturate(.65) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14), 0 2px 7px rgba(0,0,0,.12) !important;
+}
+
+body.plan-mode .set:not(.selected) .artist,
+body.plan-mode .set:not(.selected) .time{
+  opacity:.58;
 }
 
 body.plan-mode .set.selected{
+  opacity:1 !important;
+  filter:none !important;
   z-index:85 !important;
 }
 
@@ -1270,7 +1277,7 @@ body:after{
   </div>
   <div class="note">Tap once for Interested, twice for Must-see ★, third tap to remove. Your plan auto-saves in this browser.</div>
   <div class="installHint">To hide Safari bars: Share → Add to Home Screen, then open it from the Home Screen.</div>
-  <div class="planModeHint">My Plan view is on: showing only your Interested and Must-see sets ✨</div>
+  <div class="planModeHint">My Plan view is on: your selected sets stay bright, unselected sets fade into the background ✨</div>
 
   <div id="confirmClear" class="confirmOverlay" role="dialog" aria-modal="true" aria-labelledby="confirmClearTitle" aria-hidden="true">
     <div class="confirmBox">
@@ -1580,7 +1587,6 @@ function toggleSetHighlight(set){
   const id = set.dataset.id;
   const currentPriority = selected.get(id) || 0;
   const nextPriority = currentPriority === 0 ? 1 : currentPriority === 1 ? 2 : 0;
-
   set.classList.remove("selected", "interested", "mustsee", "conflict", "soft-conflict", "hard-conflict");
 
   if(nextPriority === 0){
@@ -1592,6 +1598,7 @@ function toggleSetHighlight(set){
 
   saveSelected();
   updateConflictHighlights();
+
 }
 
 function trackPress(el, className){
@@ -1752,16 +1759,22 @@ function clearCurrentDaySelections(){
 }
 
 let toastTimer;
+function resetToast(toast){
+  clearTimeout(toastTimer);
+  toast.classList.remove("show");
+  toast.replaceChildren();
+  void toast.offsetWidth;
+}
+
 function showToast(message){
   const toast = document.getElementById("toast");
   if(!toast) return;
+  resetToast(toast);
   toast.textContent = message;
-  toast.classList.remove("show");
-  void toast.offsetWidth;
   toast.classList.add("show");
-  clearTimeout(toastTimer);
   toastTimer = setTimeout(()=>toast.classList.remove("show"), 2350);
 }
+
 
 const gridToggle = document.getElementById("gridToggle");
 gridToggle.onclick = ()=>{
