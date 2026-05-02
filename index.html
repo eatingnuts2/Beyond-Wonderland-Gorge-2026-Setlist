@@ -745,7 +745,7 @@ body:not(.standalone) .installHint{
   .dayButtons{
     grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
     grid-auto-flow:column;
-    grid-template-rows:repeat(3, auto);
+    grid-template-rows:repeat(4, auto);
   }
 
   .dayButtons button[data-day="Day 1"]{ grid-column:1; grid-row:1; }
@@ -754,7 +754,8 @@ body:not(.standalone) .installHint{
 
   #gridToggle{ grid-column:2; grid-row:1; }
   #stageToggle{ grid-column:2; grid-row:2; }
-  #clear{ grid-column:2; grid-row:3; }
+  #planToggle{ grid-column:2; grid-row:3; }
+  #clear{ grid-column:1 / -1; grid-row:4; }
 
   body.stage-names-hidden .mobileStageLabel{
     opacity:0;
@@ -970,82 +971,212 @@ button:active{
 }
 
 
-
-/* EDC whimsical background refresh: brighter sky, fixed sparkles, content-safe */
-body{
-  background:
-    radial-gradient(circle at 14% 18%, rgba(255, 80, 220, .34) 0 2px, transparent 3px 110px),
-    radial-gradient(circle at 82% 12%, rgba(92, 225, 255, .38) 0 3px, transparent 4px 120px),
-    radial-gradient(circle at 58% 30%, rgba(255, 216, 82, .28) 0 2px, transparent 3px 100px),
-    radial-gradient(circle at 24% 76%, rgba(132, 255, 166, .30) 0 3px, transparent 4px 130px),
-    radial-gradient(circle at 88% 78%, rgba(190, 104, 255, .34) 0 2px, transparent 3px 115px),
-    radial-gradient(circle at 50% -8%, rgba(95, 218, 255, .28), transparent 36%),
-    radial-gradient(circle at 4% 48%, rgba(255, 94, 219, .14), transparent 34%),
-    radial-gradient(circle at 96% 54%, rgba(146, 255, 155, .12), transparent 32%),
-    linear-gradient(135deg, #070414 0%, #12073a 32%, #061f31 62%, #1a071f 100%) !important;
-  background-attachment:fixed;
-}
-
-body:before{
-  content:"";
+/* My Plan bottom sheet / modal */
+.planOverlay{
   position:fixed;
   inset:0;
-  z-index:-2;
-  pointer-events:none;
-  background:
-    linear-gradient(90deg, rgba(0,0,0,.50), rgba(0,0,0,.12), rgba(0,0,0,.48)),
-    radial-gradient(circle at 50% 45%, rgba(255,255,255,.05), transparent 48%);
+  z-index:9998;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(3,4,12,.64);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
 }
 
-body:after{
-  content:"";
-  position:fixed;
-  inset:0;
-  z-index:-1;
-  pointer-events:none;
-  opacity:.78;
-  background-image:
-    radial-gradient(circle, rgba(255,255,255,.92) 0 1px, transparent 1.8px),
-    radial-gradient(circle, rgba(255,94,219,.72) 0 1.4px, transparent 2.2px),
-    radial-gradient(circle, rgba(102,230,255,.78) 0 1.2px, transparent 2px),
-    radial-gradient(circle, rgba(255,210,92,.72) 0 1.2px, transparent 2px),
-    radial-gradient(circle, rgba(146,255,155,.62) 0 1.3px, transparent 2.1px);
-  background-size:
-    92px 92px,
-    138px 138px,
-    166px 166px,
-    214px 214px,
-    260px 260px;
-  background-position:
-    12px 18px,
-    34px 62px,
-    98px 26px,
-    148px 118px,
-    52px 184px;
-  filter:drop-shadow(0 0 5px rgba(255,255,255,.18));
+.planOverlay.show{
+  display:flex;
 }
 
-.board{
+.planPanel{
+  width:min(760px, 100%);
+  max-height:min(82vh, 760px);
+  overflow:hidden;
+  border-radius:28px;
+  color:#fff;
   background:
-    linear-gradient(180deg, rgba(64,64,74,.90), rgba(42,42,52,.94)),
-    radial-gradient(circle at 16% 0%, rgba(255,94,219,.16), transparent 34%),
-    radial-gradient(circle at 84% 100%, rgba(102,230,255,.16), transparent 38%),
-    radial-gradient(circle at 50% 50%, rgba(146,255,155,.06), transparent 48%) !important;
+    radial-gradient(circle at 16% 0%, rgba(255,94,219,.28), transparent 32%),
+    radial-gradient(circle at 86% 12%, rgba(102,230,255,.24), transparent 34%),
+    linear-gradient(180deg, rgba(28,29,45,.97), rgba(12,13,25,.98));
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 24px 70px rgba(0,0,0,.58), inset 0 1px 0 rgba(255,255,255,.10);
+}
+
+.planHeader{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:flex-start;
+  padding:20px 20px 14px;
+  border-bottom:1px solid rgba(255,255,255,.12);
+}
+
+.planHeader h2{
+  margin:0;
+  font-size:28px;
+  line-height:1;
+  text-shadow:0 0 18px rgba(255,94,219,.42), 0 0 26px rgba(102,230,255,.28);
+}
+
+.planHeader p{
+  margin:8px 0 0;
+  color:rgba(255,255,255,.72);
+  font-size:13px;
+  font-weight:700;
+}
+
+.planClose{
+  width:44px;
+  height:44px;
+  padding:0 !important;
+  font-size:28px;
+  line-height:1;
+}
+
+.planContent{
+  max-height:calc(min(82vh, 760px) - 86px);
+  overflow:auto;
+  padding:16px 20px 22px;
+}
+
+.planDay{
+  margin-bottom:18px;
+}
+
+.planDayTitle{
+  margin:4px 0 10px;
+  font-size:18px;
+  font-weight:900;
+  color:#fff8dc;
+  text-shadow:0 0 12px rgba(255,210,92,.32);
+}
+
+.planItem{
+  position:relative;
+  padding:12px 12px 12px 14px;
+  margin-bottom:9px;
+  border-radius:18px;
+  background:rgba(255,255,255,.09);
+  border:1px solid rgba(255,255,255,.13);
+  box-shadow:0 8px 22px rgba(0,0,0,.24);
+}
+
+.planItem.mustsee{
+  background:linear-gradient(135deg, rgba(255,211,92,.25), rgba(255,141,219,.12));
+  border-color:rgba(255,232,150,.42);
+}
+
+.planItem.conflict{
+  border-color:rgba(255,159,28,.62);
+  box-shadow:0 0 0 1px rgba(255,90,64,.20), 0 8px 22px rgba(0,0,0,.25);
+}
+
+.planArtist{
+  font-size:15px;
+  font-weight:900;
+  line-height:1.18;
+}
+
+.planMeta{
+  margin-top:5px;
+  color:rgba(255,255,255,.76);
+  font-size:12px;
+  font-weight:750;
+}
+
+.planClash{
+  margin-top:7px;
+  color:#ffd89b;
+  font-size:12px;
+  font-weight:850;
+  line-height:1.35;
+}
+
+.planEmpty{
+  padding:24px 12px 30px;
+  text-align:center;
+  color:rgba(255,255,255,.76);
+  font-weight:800;
+}
+
+.set.mustsee{
+  outline:4px solid rgba(255,232,120,.98) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.46),
+    0 0 0 5px rgba(255,214,80,.22),
+    0 0 24px rgba(255,214,80,.52),
+    0 8px 20px rgba(0,0,0,.26) !important;
+}
+
+.set.mustsee::after{
+  content:"★";
+  position:absolute;
+  top:3px;
+  left:4px;
+  z-index:3;
+  width:16px;
+  height:16px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#111;
+  background:rgba(255,232,120,.96);
+  font-size:11px;
+  font-weight:900;
+  line-height:1;
+  box-shadow:0 0 12px rgba(255,232,120,.55);
+}
+
+.set.selected.conflict.soft-conflict{
+  background:linear-gradient(135deg, #ff7a59, #ffd25c) !important;
+}
+
+.set.selected.conflict.hard-conflict{
+  background:linear-gradient(135deg, #ff2d55, #ff9f1c) !important;
 }
 
 @media (max-width:700px){
-  body:before{
-    opacity:.42 !important;
+  .planOverlay{
+    align-items:flex-end;
+    padding:0;
   }
 
-  body:after{
-    opacity:.58;
-    background-size:
-      78px 78px,
-      120px 120px,
-      148px 148px,
-      190px 190px,
-      230px 230px;
+  .planPanel{
+    width:100%;
+    max-height:86dvh;
+    border-radius:26px 26px 0 0;
+  }
+
+  .planHeader{
+    padding:18px 16px 12px;
+  }
+
+  .planHeader h2{
+    font-size:25px;
+  }
+
+  .planContent{
+    max-height:calc(86dvh - 82px);
+    padding:14px 16px max(20px, env(safe-area-inset-bottom));
+  }
+
+  .set.mustsee{
+    outline:2px solid rgba(255,232,120,.98) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.46),
+      0 0 0 3px rgba(255,214,80,.20),
+      0 0 18px rgba(255,214,80,.42),
+      0 7px 16px rgba(0,0,0,.24) !important;
+  }
+
+  .set.mustsee::after{
+    top:2px;
+    left:3px;
+    width:14px;
+    height:14px;
+    font-size:9px;
   }
 }
 
@@ -1065,6 +1196,7 @@ body:after{
       <button data-day="Day 3">Day 3</button>
       <button id="gridToggle" aria-pressed="false">Grid Overlay: Off</button>
       <button id="stageToggle" aria-pressed="false">Hide Stage Names</button>
+      <button id="planToggle">My Plan ✨</button>
       <button id="clear">Clear Highlights</button>
     </div>
     <div class="searchWrap">
@@ -1080,8 +1212,20 @@ body:after{
     </div>
     <div class="footer">For my Darling Emma 💖</div>
   </div>
-  <div class="note">Tap any set to highlight it. Highlights auto-save in this browser after closing/reopening.</div>
+  <div class="note">Tap once for Interested, twice for Must-see ★, third tap to remove. Your plan auto-saves in this browser.</div>
   <div class="installHint">To hide Safari bars: Share → Add to Home Screen, then open it from the Home Screen.</div>
+  <div id="planOverlay" class="planOverlay" aria-hidden="true">
+    <div class="planPanel" role="dialog" aria-modal="true" aria-labelledby="planTitle">
+      <div class="planHeader">
+        <div>
+          <h2 id="planTitle">My Plan ✨</h2>
+          <p>Interested sets and must-see picks, sorted by time.</p>
+        </div>
+        <button id="planClose" class="planClose" aria-label="Close My Plan">×</button>
+      </div>
+      <div id="planContent" class="planContent"></div>
+    </div>
+  </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </div>
 
@@ -1097,11 +1241,36 @@ const STAGES = ["Kinetic Field", "Circuit Grounds", "Cosmic Meadow", "Basspod", 
 const COLORS = {"Kinetic Field": "#f69bd0", "Circuit Grounds": "#90e6f4", "Cosmic Meadow": "#91fa9b", "Basspod": "#ffb66f", "Neon Garden": "#ff8d8d", "Quantum Valley": "#ee9fd5", "Stereo Bloom": "#99e9f5", "Wasteland": "#91fa9b", "Bionic Jungle": "#ffbd75"};
 const BASE_START = 17, END = 29.5;
 let currentDay = "Day 1";
-const STORAGE_KEY = "edc2026SelectedSets_v2";
-const selected = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"));
+const STORAGE_KEY = "edc2026SelectedSets_v3";
+const LEGACY_STORAGE_KEY = "edc2026SelectedSets_v2";
+const selected = new Map(loadSelectedState());
+
+function loadSelectedState(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    if(saved && typeof saved === "object" && !Array.isArray(saved)){
+      return Object.entries(saved).map(([id, priority])=>[id, Number(priority) === 2 ? 2 : 1]);
+    }
+
+    const legacy = JSON.parse(localStorage.getItem(LEGACY_STORAGE_KEY) || "[]");
+    if(Array.isArray(legacy)){
+      return legacy.map(id=>[id, 1]);
+    }
+  } catch(err){
+    console.warn("Could not read saved selections", err);
+  }
+  return [];
+}
 
 function saveSelected(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify([...selected]));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(Object.fromEntries(selected)));
+}
+
+function priorityClass(id){
+  const priority = selected.get(id);
+  if(priority === 2) return " selected mustsee";
+  if(priority === 1) return " selected interested";
+  return "";
 }
 
 const mobileQuery = window.matchMedia("(max-width: 700px)");
@@ -1248,7 +1417,7 @@ function render(day){
         const id=setId(day,stage,artist,start);
 
         const el=document.createElement("div");
-        el.className="set" + (selected.has(id) ? " selected" : "");
+        el.className="set" + priorityClass(id);
         el.style.background=COLORS[stage];
         el.style.left=left+"px";
         el.style.width=Math.max(width, 86)+"px";
@@ -1289,7 +1458,7 @@ function render(day){
       const height=(toHour(end)-toHour(start))/activeDuration*100;
       const el=document.createElement("div");
       const id=setId(day,stage,artist,start);
-      el.className="set" + (selected.has(id) ? " selected" : "");
+      el.className="set" + priorityClass(id);
       el.style.background=COLORS[stage];
       el.style.top=top+"%";
       el.style.height=height+"%";
@@ -1325,35 +1494,50 @@ function updateConflictHighlights(){
   const selectedSets = [...document.querySelectorAll(".set.selected")].map(el=>({
     el,
     id:el.dataset.id,
+    artist:el.dataset.artist,
+    stage:el.dataset.stage,
+    priority:selected.get(el.dataset.id) || 1,
     start:Number(el.dataset.startHour),
     end:Number(el.dataset.endHour)
   })).filter(item=>Number.isFinite(item.start) && Number.isFinite(item.end));
 
-  selectedSets.forEach(item=>item.el.classList.remove("conflict"));
+  selectedSets.forEach(item=>item.el.classList.remove("conflict", "soft-conflict", "hard-conflict"));
 
   for(let i=0; i<selectedSets.length; i++){
     for(let j=i+1; j<selectedSets.length; j++){
-      if(rangesOverlap(selectedSets[i], selectedSets[j])){
-        selectedSets[i].el.classList.add("conflict");
-        selectedSets[j].el.classList.add("conflict");
-      }
+      const a = selectedSets[i];
+      const b = selectedSets[j];
+      if(!rangesOverlap(a, b)) continue;
+
+      // Only warn when at least one overlapping set is marked Must-see.
+      if(a.priority !== 2 && b.priority !== 2) continue;
+
+      const hard = a.priority === 2 && b.priority === 2;
+      a.el.classList.add("conflict", hard ? "hard-conflict" : "soft-conflict");
+      b.el.classList.add("conflict", hard ? "hard-conflict" : "soft-conflict");
     }
   }
 }
 
 function toggleSetHighlight(set){
   const id = set.dataset.id;
+  const currentPriority = selected.get(id) || 0;
+  const nextPriority = currentPriority === 0 ? 1 : currentPriority === 1 ? 2 : 0;
 
-  if(selected.has(id)){
+  set.classList.remove("selected", "interested", "mustsee", "conflict", "soft-conflict", "hard-conflict");
+
+  if(nextPriority === 0){
     selected.delete(id);
-    set.classList.remove("selected", "conflict");
   } else {
-    selected.add(id);
-    set.classList.add("selected");
+    selected.set(id, nextPriority);
+    set.classList.add("selected", nextPriority === 2 ? "mustsee" : "interested");
   }
 
   saveSelected();
   updateConflictHighlights();
+  if(document.getElementById("planOverlay")?.classList.contains("show")){
+    renderPlan();
+  }
 }
 
 function trackPress(el, className){
@@ -1489,8 +1673,8 @@ search.addEventListener("input",()=>{
             el.scrollIntoView({block:"center", inline:"center"});
           }
           if(!selected.has(id)){
-            el.classList.add("selected");
-            selected.add(id);
+            el.classList.add("selected", "interested");
+            selected.set(id, 1);
             saveSelected();
           }
           updateConflictHighlights();
@@ -1506,7 +1690,7 @@ document.querySelectorAll(".dayButtons button[data-day]").forEach(b=>b.onclick=(
   render(b.dataset.day);
 });
 function clearCurrentDaySelections(){
-  for(const id of selected){
+  for(const id of [...selected.keys()]){
     if(id.startsWith(currentDay + "|")) selected.delete(id);
   }
   saveSelected();
@@ -1542,6 +1726,150 @@ if(stageToggle){
     stageToggle.setAttribute("aria-pressed", String(isHidden));
   };
 }
+
+function selectedPlanItems(){
+  const items = [];
+  Object.keys(DATA).forEach(day=>{
+    STAGES.forEach(stage=>{
+      (DATA[day][stage] || []).forEach(([artist,start,end])=>{
+        const id = setId(day, stage, artist, start);
+        const priority = selected.get(id);
+        if(!priority) return;
+        items.push({
+          id,
+          day,
+          stage,
+          artist,
+          start,
+          end,
+          startHour:toHour(start),
+          endHour:toHour(end),
+          priority
+        });
+      });
+    });
+  });
+  return items.sort((a,b)=>{
+    const dayCompare = a.day.localeCompare(b.day);
+    if(dayCompare) return dayCompare;
+    return a.startHour - b.startHour || a.stage.localeCompare(b.stage) || a.artist.localeCompare(b.artist);
+  });
+}
+
+function clashMapForPlan(items){
+  const map = new Map(items.map(item=>[item.id, []]));
+
+  for(let i=0; i<items.length; i++){
+    for(let j=i+1; j<items.length; j++){
+      const a = items[i];
+      const b = items[j];
+      if(a.day !== b.day) continue;
+      if(!rangesOverlap(a, b)) continue;
+      if(a.priority !== 2 && b.priority !== 2) continue;
+
+      map.get(a.id).push(b);
+      map.get(b.id).push(a);
+    }
+  }
+
+  return map;
+}
+
+function renderPlan(){
+  const content = document.getElementById("planContent");
+  if(!content) return;
+
+  const items = selectedPlanItems();
+  const clashes = clashMapForPlan(items);
+  content.innerHTML = "";
+
+  if(!items.length){
+    content.innerHTML = '<div class="planEmpty">No sets selected yet.<br>Tap a set once for Interested, twice for Must-see ★</div>';
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+  ["Day 1", "Day 2", "Day 3"].forEach(day=>{
+    const dayItems = items.filter(item=>item.day === day);
+    if(!dayItems.length) return;
+
+    const section = document.createElement("section");
+    section.className = "planDay";
+
+    const title = document.createElement("div");
+    title.className = "planDayTitle";
+    title.textContent = day;
+    section.appendChild(title);
+
+    dayItems.forEach(item=>{
+      const itemClashes = clashes.get(item.id) || [];
+      const card = document.createElement("div");
+      card.className = "planItem" + (item.priority === 2 ? " mustsee" : " interested") + (itemClashes.length ? " conflict" : "");
+
+      const icon = item.priority === 2 ? "★" : "☆";
+      const clashText = itemClashes.length
+        ? `<div class="planClash">⚠ Clashes with ${itemClashes.map(other=>`${other.priority === 2 ? "★ " : ""}${other.artist} (${fmtRange(other.start, other.end)} • ${other.stage})`).join("; ")}</div>`
+        : "";
+
+      card.innerHTML = `
+        <div class="planArtist">${icon} ${item.artist}</div>
+        <div class="planMeta">${fmtRange(item.start, item.end)} • ${item.stage}</div>
+        ${clashText}
+      `;
+
+      card.addEventListener("click", ()=>{
+        closePlan();
+        render(item.day);
+        setTimeout(()=>{
+          const el = [...document.querySelectorAll(".set")].find(x=>x.dataset.id === item.id);
+          if(!el) return;
+          const scroller = document.querySelector(".scheduleScroll");
+          if(isMobileLayout() && scroller){
+            scroller.scrollLeft = Math.max(0, el.offsetLeft - getMobileLabelWidth() - 20);
+          } else {
+            el.scrollIntoView({block:"center", inline:"center"});
+          }
+        }, 50);
+      });
+
+      section.appendChild(card);
+    });
+
+    frag.appendChild(section);
+  });
+
+  content.appendChild(frag);
+}
+
+function openPlan(){
+  renderPlan();
+  const overlay = document.getElementById("planOverlay");
+  overlay.classList.add("show");
+  overlay.setAttribute("aria-hidden", "false");
+}
+
+function closePlan(){
+  const overlay = document.getElementById("planOverlay");
+  overlay.classList.remove("show");
+  overlay.setAttribute("aria-hidden", "true");
+}
+
+const planToggle = document.getElementById("planToggle");
+if(planToggle) planToggle.onclick = openPlan;
+
+const planClose = document.getElementById("planClose");
+if(planClose) planClose.onclick = closePlan;
+
+const planOverlay = document.getElementById("planOverlay");
+if(planOverlay){
+  planOverlay.addEventListener("click", (e)=>{
+    if(e.target === planOverlay) closePlan();
+  });
+}
+
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "Escape") closePlan();
+});
 
 document.getElementById("clear").onclick=()=>{
   clearCurrentDaySelections();
