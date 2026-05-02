@@ -1067,6 +1067,85 @@ body.plan-mode .planModeHint{
   display:block;
 }
 
+
+/* EDC whimsical background refresh: brighter sky, fixed sparkles, content-safe */
+body{
+  background:
+    radial-gradient(circle at 14% 18%, rgba(255, 80, 220, .34) 0 2px, transparent 3px 110px),
+    radial-gradient(circle at 82% 12%, rgba(92, 225, 255, .38) 0 3px, transparent 4px 120px),
+    radial-gradient(circle at 58% 30%, rgba(255, 216, 82, .28) 0 2px, transparent 3px 100px),
+    radial-gradient(circle at 24% 76%, rgba(132, 255, 166, .30) 0 3px, transparent 4px 130px),
+    radial-gradient(circle at 88% 78%, rgba(190, 104, 255, .34) 0 2px, transparent 3px 115px),
+    radial-gradient(circle at 50% -8%, rgba(95, 218, 255, .28), transparent 36%),
+    radial-gradient(circle at 4% 48%, rgba(255, 94, 219, .14), transparent 34%),
+    radial-gradient(circle at 96% 54%, rgba(146, 255, 155, .12), transparent 32%),
+    linear-gradient(135deg, #070414 0%, #12073a 32%, #061f31 62%, #1a071f 100%) !important;
+  background-attachment:fixed;
+}
+
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.50), rgba(0,0,0,.12), rgba(0,0,0,.48)),
+    radial-gradient(circle at 50% 45%, rgba(255,255,255,.05), transparent 48%);
+}
+
+body:after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  opacity:.78;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.92) 0 1px, transparent 1.8px),
+    radial-gradient(circle, rgba(255,94,219,.72) 0 1.4px, transparent 2.2px),
+    radial-gradient(circle, rgba(102,230,255,.78) 0 1.2px, transparent 2px),
+    radial-gradient(circle, rgba(255,210,92,.72) 0 1.2px, transparent 2px),
+    radial-gradient(circle, rgba(146,255,155,.62) 0 1.3px, transparent 2.1px);
+  background-size:
+    92px 92px,
+    138px 138px,
+    166px 166px,
+    214px 214px,
+    260px 260px;
+  background-position:
+    12px 18px,
+    34px 62px,
+    98px 26px,
+    148px 118px,
+    52px 184px;
+  filter:drop-shadow(0 0 5px rgba(255,255,255,.18));
+}
+
+.board{
+  background:
+    linear-gradient(180deg, rgba(64,64,74,.90), rgba(42,42,52,.94)),
+    radial-gradient(circle at 16% 0%, rgba(255,94,219,.16), transparent 34%),
+    radial-gradient(circle at 84% 100%, rgba(102,230,255,.16), transparent 38%),
+    radial-gradient(circle at 50% 50%, rgba(146,255,155,.06), transparent 48%) !important;
+}
+
+@media (max-width:700px){
+  body:before{
+    opacity:.42 !important;
+  }
+
+  body:after{
+    opacity:.58;
+    background-size:
+      78px 78px,
+      120px 120px,
+      148px 148px,
+      190px 190px,
+      230px 230px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1623,8 +1702,18 @@ if(planToggle){
 }
 
 document.getElementById("clear").onclick=()=>{
+  const hasCurrentDaySelections = [...selected].some(id => id.startsWith(currentDay + "|"));
+
+  if(!hasCurrentDaySelections){
+    showToast("No selected sets to clear ✨");
+    return;
+  }
+
+  const ok = window.confirm(`Clear all selected sets for ${currentDay}?`);
+  if(!ok) return;
+
   clearCurrentDaySelections();
-  showToast("All selected sets have been cleared ✨");
+  showToast("Selected sets cleared ✨");
 };
 
 let resizeTimer;
