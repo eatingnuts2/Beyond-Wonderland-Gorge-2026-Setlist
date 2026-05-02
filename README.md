@@ -21,32 +21,43 @@ This is an interactive timeline of all EDC sets across stages and days — reima
 Instead of scrolling static schedules, you can:
 
 * Visually map your night
-* Highlight sets you want to see
-* Instantly spot time conflicts
+* Build your own schedule
+* Quickly adjust on the fly
 
 ---
 
 ## ✨ Features
 
-### 🎯 Highlight your must-see sets
+### 🎯 Smart set selection (priority system)
 
-Tap any set to select it. Your picks are saved automatically.
+Tap sets to cycle through:
+
+* ☆ **Interested** (backup option)
+* ★ **Must-see** (your priority)
+* Off (remove)
+
+This makes it easy to plan while staying flexible.
 
 ---
 
-### ⚠️ Clash detection
+### ⚠️ Intelligent clash detection
 
-If two highlighted sets overlap, they’ll glow differently so you can immediately see conflicts.
+Clashes only appear when it actually matters:
+
+* ★ Must-see vs ★ Must-see → **CLASH warning**
+* ☆ Interested sets → **never marked as clashes**
+
+👉 This keeps your backup options visible without clutter.
 
 ---
 
-### 📱 Mobile-first design
+### 🧭 My Plan mode
 
-Built specifically for iPhone use:
+Tap **My Plan** to:
 
-* Smooth horizontal timeline scrolling
-* Sticky stage labels
-* Fast, responsive interactions
+* Hide all unselected sets
+* Keep your plan directly on the timeline
+* See your night exactly as it plays out
 
 ---
 
@@ -65,19 +76,13 @@ Once opened, the app works **without internet**:
 
 ---
 
-### 🎨 EDC-inspired UI
-
-Neon gradients, glow effects, and a dark festival aesthetic — designed to feel like EDC, not a spreadsheet.
-
----
-
 ## 🚀 How to use
 
 1. Open the site
 2. Add to Home Screen (recommended)
-3. Tap sets you’re interested in
-4. Watch for clashes
-5. Build your perfect night
+3. Tap sets to build your plan
+4. Use **My Plan** to focus your schedule
+5. Watch for Must-see clashes
 
 ---
 
@@ -92,15 +97,6 @@ For extra safety:
 
 * Screenshot your plan
 * Or keep a backup copy of the HTML
-
----
-
-## 🛠 Built with
-
-* Pure HTML, CSS, JavaScript
-* No frameworks
-* No backend
-* Designed for speed and simplicity
 
 ---
 
@@ -120,8 +116,8 @@ EDC isn’t about seeing everything.
 It’s about choosing the moments that matter.
 
 Plan wisely.
-Wander freely.
-And don’t forget to look up. ✨
+Stay flexible.
+And follow the energy. ✨
 
 ---
 
