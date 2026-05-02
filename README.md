@@ -1,3 +1,5 @@
+<div align="center">
+
 # 🌈⚡ EDC Las Vegas 2026 Setlist Planner ⚡🌈
 
 > *“Under the electric sky, every choice matters.”*
@@ -6,6 +8,7 @@
 
 👉 https://eatingnuts2.github.io/EDC-Vegas-2026-Setlist/
 
+</div>
 ---
 
 A sleek, mobile-first schedule planner designed to help you navigate **EDC Las Vegas 2026** without missing the sets that matter most.
