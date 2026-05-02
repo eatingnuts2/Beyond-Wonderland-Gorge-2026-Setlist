@@ -923,7 +923,7 @@ button:active{
 }
 
 
-/* Conflict warning: selected sets that overlap in time */
+/* Conflict warning: only Must-see sets that overlap in time */
 .set.selected.conflict{
   background:linear-gradient(135deg, #ff3b3b, #ff9f1c) !important;
   color:#111 !important;
@@ -1224,6 +1224,15 @@ body:after{
 
   .confirmBox{
     border-radius:24px;
+  }
+}
+
+
+/* Mobile clash cleanup: remove the small CLASH pill/badge that looked like a gray oval */
+@media (max-width:700px){
+  .set.selected.conflict::before{
+    content:none !important;
+    display:none !important;
   }
 }
 
@@ -1556,12 +1565,13 @@ function updateConflictHighlights(){
       const b = selectedSets[j];
       if(!rangesOverlap(a, b)) continue;
 
-      // Only warn when at least one overlapping set is marked Must-see.
-      if(a.priority !== 2 && b.priority !== 2) continue;
+      // Only warn when both overlapping sets are marked Must-see.
+      // Interested sets can overlap with Must-see sets without being flagged,
+      // so they remain visible as backup options.
+      if(a.priority !== 2 || b.priority !== 2) continue;
 
-      const hard = a.priority === 2 && b.priority === 2;
-      a.el.classList.add("conflict", hard ? "hard-conflict" : "soft-conflict");
-      b.el.classList.add("conflict", hard ? "hard-conflict" : "soft-conflict");
+      a.el.classList.add("conflict", "hard-conflict");
+      b.el.classList.add("conflict", "hard-conflict");
     }
   }
 }
