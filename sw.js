@@ -1,4 +1,4 @@
-const CACHE_NAME = "edc-schedule-v1";
+const CACHE_NAME = "edc-schedule-v2";
 const FILES_TO_CACHE = [
   "/",
   "/index.html",
