@@ -2038,18 +2038,50 @@ const copyPlanBtn = document.getElementById("copyPlan");
 const importPlanBtn = document.getElementById("importPlan");
 const SHARE_PREFIX = "EDC2026:";
 
+function jsonToBase64Url(json){
+  const bytes = new TextEncoder().encode(json);
+  let binary = "";
+  bytes.forEach(byte => binary += String.fromCharCode(byte));
+  return btoa(binary)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+}
+
+function base64ToJson(rawCode){
+  let raw = String(rawCode || "")
+    .trim()
+    .replace(/^['"]|['"]$/g, "")
+    .replace(/\s+/g, "");
+
+  if(raw.toUpperCase().startsWith(SHARE_PREFIX)){
+    raw = raw.slice(SHARE_PREFIX.length);
+  }
+
+  raw = raw.replace(/-/g, "+").replace(/_/g, "/");
+  raw += "=".repeat((4 - raw.length % 4) % 4);
+
+  const binary = atob(raw);
+
+  if(window.TextDecoder){
+    const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  }
+
+  // Fallback for older browsers.
+  return decodeURIComponent(escape(binary));
+}
+
 function encodePlan(){
   const payload = {
-    v:1,
+    v:2,
     selected:Object.fromEntries(selected)
   };
-  return SHARE_PREFIX + btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  return SHARE_PREFIX + jsonToBase64Url(JSON.stringify(payload));
 }
 
 function decodePlan(code){
-  const cleaned = String(code || "").trim();
-  const raw = cleaned.startsWith(SHARE_PREFIX) ? cleaned.slice(SHARE_PREFIX.length) : cleaned;
-  const parsed = JSON.parse(decodeURIComponent(escape(atob(raw))));
+  const parsed = JSON.parse(base64ToJson(code));
   if(!parsed || typeof parsed !== "object" || !parsed.selected || typeof parsed.selected !== "object" || Array.isArray(parsed.selected)){
     throw new Error("Invalid plan code");
   }
@@ -2093,7 +2125,8 @@ function importPlan(){
     render(currentDay);
     showToast("Plan imported ✨");
   } catch(err){
-    showToast("Import failed. Check the code and try again.");
+    console.warn("Import failed", err);
+    showToast("Import failed. Check that the full code was pasted.");
   }
 }
 
