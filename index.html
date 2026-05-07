@@ -2048,19 +2048,36 @@ function jsonToBase64Url(json){
     .replace(/=+$/g, "");
 }
 
-function base64ToJson(rawCode){
-  let raw = String(rawCode || "")
+function extractPlanCode(input){
+  let raw = String(input || "")
+    .normalize("NFKC")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
     .trim()
-    .replace(/^['"]|['"]$/g, "")
-    .replace(/\s+/g, "");
+    .replace(/^['"`“”‘’]+|['"`“”‘’]+$/g, "");
 
-  if(raw.toUpperCase().startsWith(SHARE_PREFIX)){
-    raw = raw.slice(SHARE_PREFIX.length);
+  const upper = raw.toUpperCase();
+  const prefixIndex = upper.indexOf(SHARE_PREFIX);
+  if(prefixIndex !== -1){
+    raw = raw.slice(prefixIndex + SHARE_PREFIX.length);
   }
 
-  raw = raw.replace(/-/g, "+").replace(/_/g, "/");
-  raw += "=".repeat((4 - raw.length % 4) % 4);
+  // Be forgiving with iPhone/Notes/Messages copy-paste: remove line breaks,
+  // spaces, quote marks, and accidental surrounding punctuation.
+  return raw
+    .replace(/\s+/g, "")
+    .replace(/[^A-Za-z0-9+/_=-]/g, "");
+}
 
+function base64ToJson(rawCode){
+  let raw = extractPlanCode(rawCode)
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
+
+  if(!raw){
+    throw new Error("Empty plan code");
+  }
+
+  raw += "=".repeat((4 - raw.length % 4) % 4);
   const binary = atob(raw);
 
   if(window.TextDecoder){
@@ -2072,23 +2089,71 @@ function base64ToJson(rawCode){
   return decodeURIComponent(escape(binary));
 }
 
+function packedKeyForId(id){
+  const parts = String(id).split("|");
+  if(parts.length < 4) return null;
+
+  const [day, stage, artist, start] = parts;
+  const dayIndex = Object.keys(DATA).indexOf(day);
+  const stageIndex = STAGES.indexOf(stage);
+  if(dayIndex < 0 || stageIndex < 0) return null;
+
+  const sets = DATA[day]?.[stage] || [];
+  const setIndex = sets.findIndex(([setArtist, setStart]) => setArtist === artist && setStart === start);
+  if(setIndex < 0) return null;
+
+  return `${dayIndex}.${stageIndex}.${setIndex}`;
+}
+
+function idForPackedKey(key){
+  const [dayIndex, stageIndex, setIndex] = String(key).split(".").map(Number);
+  const day = Object.keys(DATA)[dayIndex];
+  const stage = STAGES[stageIndex];
+  const set = DATA[day]?.[stage]?.[setIndex];
+  if(!day || !stage || !set) return null;
+
+  const [artist, start] = set;
+  return setId(day, stage, artist, start);
+}
+
 function encodePlan(){
+  const packed = {};
+
+  selected.forEach((priority, id)=>{
+    const key = packedKeyForId(id);
+    const safePriority = Number(priority) === 2 ? 2 : 1;
+    if(key) packed[key] = safePriority;
+  });
+
   const payload = {
-    v:2,
-    selected:Object.fromEntries(selected)
+    v:3,
+    p:packed
   };
+
   return SHARE_PREFIX + jsonToBase64Url(JSON.stringify(payload));
 }
 
 function decodePlan(code){
   const parsed = JSON.parse(base64ToJson(code));
-  if(!parsed || typeof parsed !== "object" || !parsed.selected || typeof parsed.selected !== "object" || Array.isArray(parsed.selected)){
+  if(!parsed || typeof parsed !== "object"){
     throw new Error("Invalid plan code");
   }
 
-  return Object.entries(parsed.selected)
-    .filter(([id, priority]) => typeof id === "string" && (Number(priority) === 1 || Number(priority) === 2))
-    .map(([id, priority]) => [id, Number(priority)]);
+  // New compact format: stores positions instead of full artist IDs.
+  if(parsed.p && typeof parsed.p === "object" && !Array.isArray(parsed.p)){
+    return Object.entries(parsed.p)
+      .map(([key, priority]) => [idForPackedKey(key), Number(priority)])
+      .filter(([id, priority]) => typeof id === "string" && (priority === 1 || priority === 2));
+  }
+
+  // Legacy format from earlier versions: stores full set IDs.
+  if(parsed.selected && typeof parsed.selected === "object" && !Array.isArray(parsed.selected)){
+    return Object.entries(parsed.selected)
+      .filter(([id, priority]) => typeof id === "string" && (Number(priority) === 1 || Number(priority) === 2))
+      .map(([id, priority]) => [id, Number(priority)]);
+  }
+
+  throw new Error("Invalid plan code");
 }
 
 function exportPlan(){
@@ -2119,14 +2184,18 @@ function importPlan(){
 
   try{
     const entries = decodePlan(shareCode.value);
+    if(!entries.length){
+      throw new Error("Plan code did not contain any matching sets");
+    }
+
     selected.clear();
     entries.forEach(([id, priority]) => selected.set(id, priority));
     saveSelected();
     render(currentDay);
-    showToast("Plan imported ✨");
+    showToast(`Plan imported: ${entries.length} sets ✨`);
   } catch(err){
     console.warn("Import failed", err);
-    showToast("Import failed. Check that the full code was pasted.");
+    showToast("Import failed. Try exporting a fresh code from the updated app.");
   }
 }
 
