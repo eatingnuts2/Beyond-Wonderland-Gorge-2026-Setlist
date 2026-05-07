@@ -1243,6 +1243,112 @@ body:after{
   }
 }
 
+
+/* Search spotlight: temporary pulse when jumping to a DJ from search */
+.set.search-spotlight{
+  z-index:120 !important;
+  animation:searchSpotlightPulse 1.05s ease-in-out infinite;
+  outline:4px solid rgba(143,239,255,.98) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.46),
+    0 0 0 6px rgba(143,239,255,.22),
+    0 0 28px rgba(143,239,255,.74),
+    0 0 42px rgba(255,94,219,.45),
+    0 10px 24px rgba(0,0,0,.32) !important;
+}
+
+@keyframes searchSpotlightPulse{
+  0%,100%{
+    filter:brightness(1.04) saturate(1.06);
+    transform:translateZ(0) scale(1.01);
+  }
+  50%{
+    filter:brightness(1.22) saturate(1.18);
+    transform:translateZ(0) scale(1.045);
+  }
+}
+
+@media (max-width:700px){
+  .set.search-spotlight{
+    outline:3px solid rgba(143,239,255,.98) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.46),
+      0 0 0 4px rgba(143,239,255,.22),
+      0 0 22px rgba(143,239,255,.72),
+      0 0 30px rgba(255,94,219,.38),
+      0 8px 18px rgba(0,0,0,.26) !important;
+  }
+}
+
+/* Import / export planner sharing */
+.sharePanel{
+  max-width:1120px;
+  margin:14px auto 0;
+  padding:14px;
+  border-radius:20px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 10px 28px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.08);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+
+.sharePanel summary{
+  cursor:pointer;
+  font-weight:900;
+  font-size:15px;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+.sharePanel p{
+  margin:10px 0 10px;
+  color:rgba(255,255,255,.78);
+  font-size:13px;
+  line-height:1.4;
+}
+
+.shareActions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+
+.shareActions button{
+  flex:1 1 140px;
+}
+
+#shareCode{
+  width:100%;
+  min-height:92px;
+  resize:vertical;
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:16px;
+  padding:12px;
+  color:#fff;
+  background:rgba(5,5,16,.62);
+  outline:none;
+  font:600 12px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+#shareCode::placeholder{
+  color:rgba(255,255,255,.44);
+}
+
+@media (max-width:700px){
+  .sharePanel{
+    border-radius:18px;
+    padding:12px;
+  }
+
+  .shareActions{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1278,6 +1384,17 @@ body:after{
   <div class="note">Tap once for Interested, twice for Must-see ★, third tap to remove. Your plan auto-saves in this browser.</div>
   <div class="installHint">To hide Safari bars: Share → Add to Home Screen, then open it from the Home Screen.</div>
   <div class="planModeHint">My Plan view is on: your selected sets stay bright, unselected sets fade into the background ✨</div>
+
+  <details class="sharePanel">
+    <summary>Import / Export Plan ✨</summary>
+    <p>Export your selected sets as a copyable text code, or paste a code from another device to import that plan.</p>
+    <div class="shareActions">
+      <button id="exportPlan" type="button">Export Plan</button>
+      <button id="copyPlan" type="button">Copy Code</button>
+      <button id="importPlan" type="button">Import Code</button>
+    </div>
+    <textarea id="shareCode" spellcheck="false" autocomplete="off" placeholder="Your export/import code will appear here..."></textarea>
+  </details>
 
   <div id="confirmClear" class="confirmOverlay" role="dialog" aria-modal="true" aria-labelledby="confirmClearTitle" aria-hidden="true">
     <div class="confirmBox">
@@ -1543,6 +1660,21 @@ function render(day){
 
 
 
+let searchSpotlightEl = null;
+
+function clearSearchSpotlight(){
+  if(searchSpotlightEl){
+    searchSpotlightEl.classList.remove("search-spotlight");
+    searchSpotlightEl = null;
+  }
+}
+
+function showSearchSpotlight(el){
+  clearSearchSpotlight();
+  searchSpotlightEl = el;
+  el.classList.add("search-spotlight");
+}
+
 const gridEl = document.getElementById("grid");
 const pressedEls = new Set();
 const TAP_MOVE_LIMIT = 8;
@@ -1584,6 +1716,7 @@ function updateConflictHighlights(){
 }
 
 function toggleSetHighlight(set){
+  if(set === searchSpotlightEl) clearSearchSpotlight();
   const id = set.dataset.id;
   const currentPriority = selected.get(id) || 0;
   const nextPriority = currentPriority === 0 ? 1 : currentPriority === 1 ? 2 : 0;
@@ -1687,6 +1820,7 @@ gridEl.addEventListener("click", (e)=>{
 });
 
 document.addEventListener("pointerdown", (e)=>{
+  if(searchSpotlightEl) clearSearchSpotlight();
   const button = e.target.closest("button");
   if(button && isMobileLayout()){
     trackPress(button, "mobile-pressing");
@@ -1733,11 +1867,7 @@ search.addEventListener("input",()=>{
           } else {
             el.scrollIntoView({block:"center", inline:"center"});
           }
-          if(!selected.has(id)){
-            el.classList.add("selected", "interested");
-            selected.set(id, 1);
-            saveSelected();
-          }
+          showSearchSpotlight(el);
           updateConflictHighlights();
         }
       }, 50);
@@ -1867,6 +1997,76 @@ document.addEventListener("keydown", (e)=>{
     closeClearConfirm();
   }
 });
+
+
+const shareCode = document.getElementById("shareCode");
+const exportPlanBtn = document.getElementById("exportPlan");
+const copyPlanBtn = document.getElementById("copyPlan");
+const importPlanBtn = document.getElementById("importPlan");
+const SHARE_PREFIX = "EDC2026:";
+
+function encodePlan(){
+  const payload = {
+    v:1,
+    selected:Object.fromEntries(selected)
+  };
+  return SHARE_PREFIX + btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+}
+
+function decodePlan(code){
+  const cleaned = String(code || "").trim();
+  const raw = cleaned.startsWith(SHARE_PREFIX) ? cleaned.slice(SHARE_PREFIX.length) : cleaned;
+  const parsed = JSON.parse(decodeURIComponent(escape(atob(raw))));
+  if(!parsed || typeof parsed !== "object" || !parsed.selected || typeof parsed.selected !== "object" || Array.isArray(parsed.selected)){
+    throw new Error("Invalid plan code");
+  }
+
+  return Object.entries(parsed.selected)
+    .filter(([id, priority]) => typeof id === "string" && (Number(priority) === 1 || Number(priority) === 2))
+    .map(([id, priority]) => [id, Number(priority)]);
+}
+
+function exportPlan(){
+  if(!shareCode) return;
+  shareCode.value = encodePlan();
+  shareCode.focus();
+  shareCode.select();
+  showToast("Plan export code ready ✨");
+}
+
+async function copyPlan(){
+  if(!shareCode) return;
+  if(!shareCode.value.trim()) shareCode.value = encodePlan();
+  shareCode.focus();
+  shareCode.select();
+
+  try{
+    await navigator.clipboard.writeText(shareCode.value);
+    showToast("Plan code copied ✨");
+  } catch(err){
+    document.execCommand("copy");
+    showToast("Plan code selected. Copy it manually if needed ✨");
+  }
+}
+
+function importPlan(){
+  if(!shareCode) return;
+
+  try{
+    const entries = decodePlan(shareCode.value);
+    selected.clear();
+    entries.forEach(([id, priority]) => selected.set(id, priority));
+    saveSelected();
+    render(currentDay);
+    showToast("Plan imported ✨");
+  } catch(err){
+    showToast("Import failed. Check the code and try again.");
+  }
+}
+
+exportPlanBtn?.addEventListener("click", exportPlan);
+copyPlanBtn?.addEventListener("click", copyPlan);
+importPlanBtn?.addEventListener("click", importPlan);
 
 let resizeTimer;
 window.addEventListener("resize", ()=>{
