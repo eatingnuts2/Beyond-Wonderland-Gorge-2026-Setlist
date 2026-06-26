@@ -6,7 +6,7 @@
 
 ### 🚀 **Live App**
 
-👉 https://eatingnuts2.github.io/Beyond-Wonderland-At-The-Gorge-2026-Setlist/
+👉 https://eatingnuts2.github.io/Beyond-Wonderland-Gorge-2026-Setlist/
 
 </div>
 
