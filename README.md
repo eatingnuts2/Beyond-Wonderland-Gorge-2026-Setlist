@@ -1,44 +1,45 @@
 <div align="center">
 
-# 🌈⚡ EDC Las Vegas 2026 Setlist Planner ⚡🌈
+# 🌀🌈 Beyond Wonderland at The Gorge 2026 Setlist Planner 🌈🌀
 
-> *“Under the electric sky, every choice matters.”*
+> *“Down the rabbit hole, every set choice matters.”*
 
 ### 🚀 **Live App**
 
-👉 https://eatingnuts2.github.io/EDC-Vegas-2026-Setlist/
+👉 https://eatingnuts2.github.io/Beyond-Wonderland-At-The-Gorge-2026-Setlist/
 
 </div>
 
 ---
 
-A sleek, mobile-first schedule planner designed to help you navigate **EDC Las Vegas 2026** without missing the sets that matter most.
+A sleek, mobile-first schedule planner designed to help you navigate **Beyond Wonderland at The Gorge 2026** without missing the sets that matter most.
 
-Built as a lightweight web app that works **offline**, so even when signal disappears in the crowd… your plan doesn’t.
+Built as a lightweight web app that works **offline**, so even when signal disappears at the festival… your plan doesn’t.
 
 ---
 
 ## 🎧 What this is
 
-This is an interactive timeline of all EDC sets across stages and days — reimagined into a tool for actually **deciding where to go**.
+This is an interactive timeline of all Beyond Wonderland sets across **2 days** and **3 stages** — reimagined into a tool for actually **deciding where to go**.
 
 Instead of scrolling static schedules, you can:
 
-* Visually map your night
+* Visually map your day
 * Build your own schedule
 * Quickly adjust on the fly
+* Keep track of conflicts between priority sets
 
 ---
 
 ## ✨ Features
 
-### 🎯 Smart set selection (priority system)
+### 🎯 Smart set selection
 
 Tap sets to cycle through:
 
-* ☆ **Interested** (backup option)
-* ★ **Must-see** (your priority)
-* Off (remove)
+* ☆ **Interested** — backup option
+* ★ **Must-see** — your priority
+* Off — remove
 
 This makes it easy to plan while staying flexible.
 
@@ -59,9 +60,9 @@ Clashes only appear when it actually matters:
 
 Tap **My Plan** to:
 
-* Hide all unselected sets
+* Fade out unselected sets
 * Keep your plan directly on the timeline
-* See your night exactly as it plays out
+* See your festival schedule exactly as it plays out
 
 ---
 
@@ -71,19 +72,19 @@ Quickly find any DJ and jump straight to their set.
 
 ---
 
-### 💾 Offline support (PWA)
+### 💾 Offline support
 
 Once opened, the app works **without internet**:
 
-* Perfect for EDC where signal is unreliable
-* Add to Home Screen for full app experience
+* Perfect for festival grounds where signal can be unreliable
+* Add to Home Screen for a smoother app-like experience
 
 ---
 
 ## 🚀 How to use
 
 1. Open the site
-2. Add to Home Screen (recommended)
+2. Add to Home Screen
 3. Tap sets to build your plan
 4. Use **My Plan** to focus your schedule
 5. Watch for Must-see clashes
@@ -116,12 +117,12 @@ This tool was made to answer one question:
 
 ## 🌙 Final note
 
-EDC isn’t about seeing everything.
+Beyond Wonderland isn’t about seeing everything.
 It’s about choosing the moments that matter.
 
 Plan wisely.
 Stay flexible.
-And follow the energy. ✨
+And follow the rabbit hole. ✨
 
 ---
 
